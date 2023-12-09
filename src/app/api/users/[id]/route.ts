@@ -3,7 +3,7 @@ import supabase from "@/supabaseClient"
 export const GET = async (_: Request, { params }: any) => {
   try {
     const { data } = await supabase
-      .from('rides')
+      .from('users')
       .select('*')
       .eq('id', params.id)
 
