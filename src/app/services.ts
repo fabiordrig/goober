@@ -1,7 +1,7 @@
-import { Driver, GeofinderLocation, NewUser, Ride, User } from "./types";
+import { Driver, DriverRide, GeofinderLocation, NewDriver, NewUser, Ride, User } from "./types";
 
-export const getActiveRide = async (riderId: string, status?: string): Promise<Ride> => {
-  const url = status ? `/api/rides/${riderId}?status=${status}` : `/api/rides/${riderId}`;
+export const getActiveRide = async (userId: string, status?: string): Promise<Ride> => {
+  const url = status ? `/api/rides/${userId}?status=${status}` : `/api/rides/${userId}`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -10,6 +10,7 @@ export const getActiveRide = async (riderId: string, status?: string): Promise<R
     },
   });
   const result = await response.json();
+
   return result;
 }
 
@@ -19,6 +20,19 @@ export const getDriver = async (id: string): Promise<Driver> => {
     headers: {
       "Content-Type": "application/json",
     },
+  });
+  const result = await response.json();
+
+  return result;
+}
+
+export const getNextRide = async (driverLocation: GeofinderLocation): Promise<DriverRide> => {
+  const response = await fetch(`/api/drivers/next`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ driverLocation }),
   });
   const result = await response.json();
 
@@ -68,7 +82,8 @@ export const createUser = async (payload: NewUser): Promise<User> => {
   return result;
 }
 
-export const createDriver = async (payload: NewUser): Promise<Driver> => {
+
+export const createDriver = async (payload: NewDriver): Promise<Driver> => {
   const response = await fetch(`/api/drivers`, {
     method: "POST",
     headers: {
@@ -137,4 +152,34 @@ export const requestRide = async (riderId: string, pickup: GeofinderLocation, dr
 
   return result;
 
+}
+
+
+export const cancelRide = async (id: string): Promise<Ride> => {
+  const response = await fetch(`/api/rides/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+
+  const result = await response.json();
+
+  return result;
+}
+
+
+export const acceptRide = async (driverId: string, riderId: string): Promise<Ride> => {
+  const response = await fetch(`/api/rides`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ driverId, riderId }),
+  });
+
+  const result = await response.json();
+
+  return result;
 }

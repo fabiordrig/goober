@@ -1,4 +1,5 @@
-import { calculateETA } from "@/app/utils";
+
+import { calculateETA } from "@/app/api/utils";
 import supabase from "@/supabaseClient";
 
 export const GET = async (req: Request, { params }: any) => {

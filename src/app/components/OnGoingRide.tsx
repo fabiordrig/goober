@@ -1,29 +1,32 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Button, Avatar, Typography, Space, Spin, message, Popconfirm } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Driver, Ride } from "../types";
-import { getActiveRide, getDriver, getETA } from "../services";
+import { cancelRide, getActiveRide, getDriver, getETA } from "../services";
 import { Status } from "../constants";
+import { Context } from "../context";
 
 const { Text } = Typography;
 
-const OnGoingRide: FC<{ driverAccepted?: boolean }> = ({ driverAccepted }) => {
+const OnGoingRide: FC = () => {
   const [activeRide, setActiveRide] = useState<Ride>();
   const [driver, setDriver] = useState<Driver>();
-  const [eta, setEta] = useState<number>();
+  const [driverAccepted, setDriverAccepted] = useState<boolean>(false);
+  const [eta, setEta] = useState<number>(1);
+
+  const context = useContext(Context);
 
   const handleActiveRide = async () => {
     try {
-      const activeId = localStorage.getItem("userId");
-      const ride = await getActiveRide(activeId!);
-
-      if (ride.status === Status.Accepted && !driver) {
-        setDriver(await getDriver(ride.driverId));
-
-        setEta(await getETA(ride.id));
+      if (!context.activeRide) {
+        const ride = await context.getActiveRide(context.user!.id);
+        setActiveRide(ride);
+        if (ride.status === Status.Accepted && !driver) {
+          setDriver(await getDriver(ride.driverId));
+          setDriverAccepted(true);
+          setEta(await getETA(ride.id));
+        }
       }
-
-      setActiveRide(activeRide);
     } catch (error) {
       message.error("Failed to fetch active ride");
     }
@@ -37,7 +40,16 @@ const OnGoingRide: FC<{ driverAccepted?: boolean }> = ({ driverAccepted }) => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const cancelRide = () => {};
+  const handleCancelRide = async () => {
+    try {
+      await cancelRide(context.activeRide!.id);
+      message.success("Ride canceled");
+      setDriverAccepted(false);
+      await context.setActiveRide();
+    } catch (error) {
+      message.error("Failed to cancel ride");
+    }
+  };
 
   return (
     <Space direction="vertical" size="large" style={{ textAlign: "center" }}>
@@ -56,11 +68,11 @@ const OnGoingRide: FC<{ driverAccepted?: boolean }> = ({ driverAccepted }) => {
       )}
       <Popconfirm
         title="Are you sure to cancel this ride?"
-        onConfirm={cancelRide}
-        okText="Yes"
+        onConfirm={handleCancelRide}
+        okText="Wait for driver"
         cancelText="No"
       >
-        <Button type="primary" danger size="large" block onClick={cancelRide}>
+        <Button type="primary" danger size="large" block>
           Cancel Ride
         </Button>
       </Popconfirm>

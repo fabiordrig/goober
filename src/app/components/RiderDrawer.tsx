@@ -11,10 +11,11 @@ import {
   Typography,
   message,
 } from "antd";
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { GeofinderLocation } from "../types";
 import { calculateFare, getLocations, requestRide } from "../services";
 import { useDebouncer } from "../utils";
+import { Context } from "../context";
 
 type FormValuesType = {
   pickupLocation: string;
@@ -34,6 +35,8 @@ const RiderDrawer: FC<{
   const dropoffLocationAddress = Form.useWatch("dropoffLocation", form);
 
   const debouncer = useDebouncer();
+
+  const context = useContext(Context);
 
   const fetchLocations = async (
     value: string,
@@ -70,8 +73,11 @@ const RiderDrawer: FC<{
         (location) => location.address === dropoffLocationAddress,
       )!;
 
-      await requestRide(riderId, pickupLocation, dropoffLocation, estimatedFare!);
+      const ride = await requestRide(riderId, pickupLocation, dropoffLocation, estimatedFare!);
+      await context.setActiveRide(ride);
+
       message.success("Your ride has been requested. Please wait for a driver to accept.");
+
       onClose();
     } catch (error) {
       message.error("An error occurred while requesting your ride");
@@ -81,13 +87,7 @@ const RiderDrawer: FC<{
   const disabled = !pickupLocationAddress || !dropoffLocationAddress || !estimatedFare;
 
   return (
-    <Drawer
-      title="Request a Ride"
-      placement="bottom"
-      closable={false}
-      onClose={onClose}
-      open={open}
-    >
+    <Drawer title="Request a Ride" placement="bottom" onClose={onClose} open={open}>
       <Form layout="vertical" form={form} requiredMark={false} onFinish={onFinish}>
         <Form.Item
           name="pickupLocation"

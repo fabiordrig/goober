@@ -40,16 +40,14 @@ export const GET = async (req: Request, { params }: any) => {
 
 export const DELETE = async (req: Request, { params }: any) => {
   try {
-    const { id } = params;
-
     const { data } = await supabase
       .from('rides')
       .update({ status: 'cancelled' })
-      .eq('id', id)
+      .eq('id', params.id)
       .single()
-
     return new Response(JSON.stringify(data), { status: 200 })
   } catch (error) {
+
     return new Response(JSON.stringify(error), { status: 500 })
   }
 }

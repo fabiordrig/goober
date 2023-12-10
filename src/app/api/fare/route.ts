@@ -1,4 +1,5 @@
-import { calculateFare } from "@/app/utils"
+import { calculateFare } from "../utils"
+
 
 
 export const POST = async (req: Request) => {
@@ -6,6 +7,8 @@ export const POST = async (req: Request) => {
     const { pickup, dropoff } = await req.json()
 
     const fee = calculateFare(pickup.lat, pickup.lng, dropoff.lat, dropoff.lng)
+
+
 
 
     return new Response(JSON.stringify(fee), { status: 200 })

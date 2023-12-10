@@ -1,30 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { createUser, getActiveRide, getUser } from "./services";
 import { generateUUID } from "./utils";
-import { User } from "./types";
 import { Card, Skeleton, Typography, message } from "antd";
 import StandardContent from "./components/StantardContent";
 import AskRide from "./components/AskRide";
 import OnGoingRide from "./components/OnGoingRide";
+import { Context } from "./context";
+import { Status } from "./constants";
 
 const { Title } = Typography;
 
 const Home = () => {
-  const [user, setUser] = useState<User>();
-  const [userId, setUserId] = useState<string | null>();
-  const [hasActiveRide, setHasActiveRide] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const { setActiveRide, setUser, user, getUser, activeRide } = useContext(Context);
 
   const fetchUser = async (userId: string) => {
     setLoading(true);
     try {
-      setUser(await getUser(userId));
+      setUser(await getUser());
 
-      const activeRide = await getActiveRide(userId);
-
-      setHasActiveRide(!!activeRide);
+      const response = await getActiveRide(userId);
+      setActiveRide(response);
     } catch (error) {
       message.error("Failed to fetch user");
     } finally {
@@ -37,7 +35,7 @@ const Home = () => {
     try {
       const newUserId = generateUUID();
       localStorage.setItem("userId", newUserId);
-      setUserId(newUserId);
+
       const newUser = await createUser({
         id: newUserId,
         userType: "rider",
@@ -61,7 +59,9 @@ const Home = () => {
     fetchUser(activeId!);
   }, []);
 
-  if (loading) {
+  const hasActiveRide = activeRide && activeRide.status === Status.Pending;
+
+  if (loading || !user) {
     return (
       <StandardContent>
         <div

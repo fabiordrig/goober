@@ -6,7 +6,7 @@ const StandardContent: FC<{
 }> = ({ children }) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Layout.Header style={{ background: "#f0f2f5", padding: 0 }}>
+      <Layout.Header style={{ background: "#f0f2f5", padding: 0, textAlign: "center" }}>
         <Typography.Title style={{ margin: "40px 20px ", color: "#1890ff" }}>
           Goober
         </Typography.Title>

@@ -28,12 +28,17 @@ export interface Ride {
   pickupLocationLng: number;
   dropoffLocationLat: number;
   dropoffLocationLng: number;
-  pickupTime: string;
-  dropoffTime: string;
+  pickupTime?: string;
+  dropoffTime?: string;
   status: 'pending' | 'accepted' | 'completed' | 'cancelled';
   price: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface DriverRide extends Ride {
+  pickupLocation: string;
+  dropoffLocation: string;
 }
 
 export interface Rating {
@@ -53,9 +58,19 @@ export interface NewUser {
 
 
 export type GeofinderLocation = {
-  address: string;
+  address?: string;
   lat: number;
   lng: number;
 }
 
 
+export interface NewDriver {
+  id: string;
+  userType: 'driver';
+  licenseNumber: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string;
+  color: string;
+}

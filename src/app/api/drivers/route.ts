@@ -22,7 +22,7 @@ export const POST = async (request: Request) => {
     const { data } = await supabase
       .from('drivers')
       .insert(
-        { id, user_id: id, license_number: licenseNumber, status, make, model, year, license_plate: licensePlate, color }
+        { id, user_id: id, license_number: licenseNumber, status: "active", make, model, year, license_plate: licensePlate, color }
       ).select('*').single()
 
     const response: Driver = {

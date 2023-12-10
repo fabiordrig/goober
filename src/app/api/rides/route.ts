@@ -41,7 +41,7 @@ export const POST = async (request: Request) => {
       .eq('rider_id', riderId)
       .eq('status', 'pending')
 
-    if (rides) {
+    if (!!rides?.length) {
       return new Response(JSON.stringify({ message: 'You already have a pending ride' }), { status: 422 })
     }
 
