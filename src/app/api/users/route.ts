@@ -1,4 +1,3 @@
-import { User } from "@/app/types"
 import supabase from "@/supabaseClient"
 
 export const POST = async (request: Request) => {

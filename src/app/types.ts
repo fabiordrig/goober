@@ -1,53 +1,48 @@
 export interface User {
   id: string;
-  user_type: 'rider' | 'driver';
-  created_at: string;
-  updated_at: string;
+  userType: 'rider' | 'driver';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Driver {
   id: string;
-  user_id: string;
-  license_number: string;
+  userId: string;
+  licenseNumber: string;
   status: 'active' | 'inactive';
   rating: number | null;
-  created_at: string;
-}
-
-export interface Vehicle {
-  id: string;
-  driver_id: string;
   make: string;
   model: string;
   year: number;
-  license_plate: string;
+  licensePlate: string;
   color: string;
-  vehicle_type: string;
-  insurance_details: string;
+  createdAt: string;
 }
+
 
 export interface Ride {
   id: string;
-  rider_id: string;
-  driver_id: string;
-  vehicle_id: string;
-  pickup_location: string;
-  dropoff_location: string;
-  pickup_time: string;
-  dropoff_time: string;
-  status: 'requested' | 'in progress' | 'completed' | 'cancelled';
+  riderId: string;
+  driverId: string;
+  pickupLocationLat: number;
+  pickupLocationLng: number;
+  dropoffLocationLat: number;
+  dropoffLocationLng: number;
+  pickupTime: string;
+  dropoffTime: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
   price: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Rating {
   id: string;
-  ride_id: string;
-  rider_rating: number | null;
-  driver_rating: number | null;
-  comments: string | null;
-  created_at: string;
+  rideId: string;
+  riderRating?: number;
+  driverRating: number;
+  comments?: string;
+  createdAt: string;
 }
 
 
