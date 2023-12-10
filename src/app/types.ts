@@ -55,3 +55,12 @@ export interface NewUser {
   id: string;
   userType: 'rider' | 'driver';
 }
+
+
+export type GeofinderLocation = {
+  address: string;
+  lat: number;
+  lng: number;
+}
+
+

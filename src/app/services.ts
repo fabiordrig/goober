@@ -1,4 +1,4 @@
-import { NewUser, Ride, User } from "./types";
+import { GeofinderLocation, NewUser, Ride, User } from "./types";
 
 export const getRider = async (id: string): Promise<Ride> => {
   const response = await fetch(`/api/rider/${id}`, {
@@ -50,4 +50,36 @@ export const createUser = async (payload: NewUser): Promise<User> => {
   const result = await response.json();
 
   return result;
+}
+
+
+export const getLocations = async (address: string): Promise<GeofinderLocation[]> => {
+
+  if (!address) {
+    throw new Error("Address is required")
+  };
+  const response = await fetch(`/api/geofinder?address=${address}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  console.log(address);
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const result = await response.json();
+
+  const locations = result.items.map((item: any) => {
+    return {
+      address: item.title,
+      lat: item.position.lat,
+      lng: item.position.lng,
+    }
+  }
+  );
+
+  return locations;
 }

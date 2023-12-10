@@ -14,30 +14,8 @@ const Home = () => {
   const [user, setUser] = useState<User>();
   const [userId, setUserId] = useState<string | null>();
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [userLocation, setUserLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  }>();
 
   const [form] = Form.useForm();
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        () => {
-          message.error("Error getting the location");
-        },
-      );
-    } else {
-      message.error("Geolocation is not supported by this browser.");
-    }
-  };
 
   const fetchUser = async () => {
     if (!userId) {
@@ -66,10 +44,8 @@ const Home = () => {
     }
 
     fetchUser();
-    getLocation();
   }, []);
 
-  console.log(userLocation);
   return (
     <StandardContent>
       <div
@@ -85,6 +61,7 @@ const Home = () => {
             </Title>
             <Button
               type="primary"
+              size="large"
               onClick={() => setDrawerVisible(true)}
               style={{ marginBottom: 20 }}
             >
