@@ -15,7 +15,16 @@ const findClosestRide = (rides: any[], driverLocation: GeofinderLocation) => {
 
 export const POST = async (req: Request) => {
   try {
-    const { driverLocation } = await req.json();
+    const { driverLocation, driverId } = await req.json();
+
+    const { data: currentRide } = await supabase
+      .from('rides')
+      .select('*')
+      .eq('driver_id', driverId)
+      .eq('status', 'accepted')
+      .single();
+
+
     const { data: rides } = await supabase
       .from('rides')
       .select('*')

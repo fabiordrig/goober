@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, use, useContext, useEffect, useState } from "react";
 import { Avatar, Button, Card, Form, Skeleton, Space, Spin, Typography, message } from "antd";
 import StandardContent from "../components/StantardContent";
 import DriverDrawer from "../components/DriverDrawer";
@@ -14,7 +14,6 @@ import NewDriverForm, { NewDriverFormValues } from "../components/NewDriverForm"
 const { Text, Title } = Typography;
 
 const Page: FC = () => {
-  const [open, setOpen] = useState<boolean>(false);
   const [driveRide, setDriverRide] = useState<DriverRide>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -23,9 +22,9 @@ const Page: FC = () => {
   const { driver, setDriver, createDriver } = useContext(Context);
 
   const [userLocation, setUserLocation] = useState<{
-    lat: number | null;
-    lng: number | null;
-  }>({ lat: null, lng: null });
+    lat: number;
+    lng: number;
+  }>();
 
   const createNewDriver = async (formValues: NewDriverFormValues) => {
     setLoading(true);
@@ -40,8 +39,6 @@ const Page: FC = () => {
         userType: "driver",
         year: Number(formValues.year.format("YYYY")),
       };
-
-      console.log(payload, "payload");
 
       await createDriver(payload);
     } catch (error) {
@@ -70,14 +67,8 @@ const Page: FC = () => {
   };
 
   const handleGetNextRide = async () => {
-    if (!userLocation.lat || !userLocation.lng || driver) {
-      return;
-    }
-
-    setDriverRide(await getNextRide({ lat: userLocation.lat, lng: userLocation.lng }));
-
-    if (driveRide) {
-      setOpen(true);
+    if (userLocation && driver) {
+      setDriverRide(await getNextRide(userLocation, driver.id));
     }
   };
 
@@ -101,18 +92,27 @@ const Page: FC = () => {
   useEffect(() => {
     getLocation();
     handleGetDriver();
-    const intervalId = setInterval(() => {
-      handleGetNextRide();
-    }, 100000);
-
-    return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      handleGetNextRide();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [userLocation]);
+
   const handleAcceptRide = async () => {
-    if (!driveRide) {
+    if (!driveRide || !driver) {
       return;
     }
-    await acceptRide(driveRide.id, driveRide.riderId);
+    try {
+      await acceptRide(driver.id, driveRide.riderId);
+      setDriverRide(undefined);
+      message.success("Ride accepted");
+    } catch (error) {
+      message.error("Failed to accept ride");
+    }
   };
 
   if (loading) {
@@ -168,12 +168,14 @@ const Page: FC = () => {
             ) : (
               <NewDriverForm form={form} onFinish={createNewDriver} />
             )}
-            <DriverDrawer
-              open={open}
-              onClose={() => setOpen(false)}
-              driverRide={driveRide}
-              onAccept={handleAcceptRide}
-            />
+            {driveRide?.id && (
+              <DriverDrawer
+                open={!!driveRide}
+                onClose={() => setDriverRide(undefined)}
+                driverRide={driveRide}
+                onAccept={handleAcceptRide}
+              />
+            )}
           </div>
         </Card>
       </div>

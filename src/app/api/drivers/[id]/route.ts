@@ -26,6 +26,8 @@ export const GET = async (req: Request, { params }: any) => {
       updatedAt: data?.updated_at,
     } as unknown as Driver
 
+
+
     return new Response(JSON.stringify(response), { status: 200 });
   } catch (error) {
     return new Response(JSON.stringify(error), { status: 500 });

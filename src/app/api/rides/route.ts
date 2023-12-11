@@ -1,4 +1,6 @@
+import { Ride } from "@/app/types"
 import supabase from "@/supabaseClient"
+import { getCityByLatAndLng } from "../geofinder"
 
 export const GET = async () => {
   try {
@@ -17,16 +19,43 @@ export const GET = async () => {
 export const PATCH = async (req: Request) => {
   const { driverId, riderId } = await req.json();
 
+
+
   const { data, error, count } = await supabase
     .from('rides')
     .update({ status: 'accepted', driver_id: driverId })
-    .match({ id: riderId, status: 'pending' })
+    .match({ rider_id: riderId, status: 'pending' })
+    .select("*").single();
 
-  if (error || count === 0) {
-    return new Response(JSON.stringify({ message: "The ride is already taken" }), { status: 422 });
+
+
+
+  if (error || count === 0 || !count) {
+    throw new Error(JSON.stringify({ message: "The ride is already taken" }));
   }
 
-  return new Response(JSON.stringify(data), { status: 200 });
+  const ride: Ride = {
+    id: data.id,
+    riderId: data.rider_id,
+    status: data.status,
+    driverId: data.driver_id,
+    price: data.price,
+    pickupLocationLat: data.pickup_location_lat,
+    pickupLocationLng: data.pickup_location_lng,
+    dropoffLocationLat: data.dropoff_location_lat,
+    dropoffLocationLng: data.dropoff_location_lng,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  }
+
+  const pickupLocations = await getCityByLatAndLng(data.pickup_location_lat, data.pickup_location_lng);
+  const dropoffLocations = await getCityByLatAndLng(data.dropoff_location_lat, data.dropoff_location_lng);
+
+  return new Response(JSON.stringify({
+    ...ride,
+    pickupLocation: pickupLocations.items[0].title,
+    dropoffLocation: dropoffLocations.items[0].title,
+  }), { status: 200 });
 
 }
 

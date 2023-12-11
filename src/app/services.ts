@@ -26,13 +26,13 @@ export const getDriver = async (id: string): Promise<Driver> => {
   return result;
 }
 
-export const getNextRide = async (driverLocation: GeofinderLocation): Promise<DriverRide> => {
+export const getNextRide = async (driverLocation: GeofinderLocation, driverId: string): Promise<DriverRide> => {
   const response = await fetch(`/api/drivers/next`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ driverLocation }),
+    body: JSON.stringify({ driverLocation, driverId }),
   });
   const result = await response.json();
 
@@ -170,7 +170,7 @@ export const cancelRide = async (id: string): Promise<Ride> => {
 }
 
 
-export const acceptRide = async (driverId: string, riderId: string): Promise<Ride> => {
+export const acceptRide = async (driverId: string, riderId: string): Promise<DriverRide> => {
   const response = await fetch(`/api/rides`, {
     method: "PATCH",
     headers: {
@@ -180,6 +180,8 @@ export const acceptRide = async (driverId: string, riderId: string): Promise<Rid
   });
 
   const result = await response.json();
+
+
 
   return result;
 }

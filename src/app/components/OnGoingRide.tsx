@@ -1,36 +1,35 @@
 import { FC, useContext, useEffect, useState } from "react";
 import { Button, Avatar, Typography, Space, Spin, message, Popconfirm } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { Driver, Ride } from "../types";
-import { cancelRide, getActiveRide, getDriver, getETA } from "../services";
+import { cancelRide, getDriver, getETA } from "../services";
 import { Status } from "../constants";
 import { Context } from "../context";
 
 const { Text } = Typography;
 
 const OnGoingRide: FC = () => {
-  const [activeRide, setActiveRide] = useState<Ride>();
-  const [driver, setDriver] = useState<Driver>();
-  const [driverAccepted, setDriverAccepted] = useState<boolean>(false);
-  const [eta, setEta] = useState<number>(1);
-
-  const context = useContext(Context);
+  const [eta, setEta] = useState<number>(0);
+  const { activeRide, setActiveRide, getActiveRide, driver, setDriver, user } = useContext(Context);
 
   const handleActiveRide = async () => {
     try {
-      if (!context.activeRide) {
-        const ride = await context.getActiveRide(context.user!.id);
+      if (!activeRide) {
+        const ride = await getActiveRide(user!.id);
         setActiveRide(ride);
-        if (ride.status === Status.Accepted && !driver) {
-          setDriver(await getDriver(ride.driverId));
-          setDriverAccepted(true);
-          setEta(await getETA(ride.id));
-        }
       }
     } catch (error) {
       message.error("Failed to fetch active ride");
     }
   };
+
+  const handleSetEta = async () => {
+    setEta(await getETA(activeRide!.id));
+    setDriver(await getDriver(activeRide!.driverId));
+  };
+
+  useEffect(() => {
+    handleSetEta();
+  }, [activeRide]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -40,12 +39,13 @@ const OnGoingRide: FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  const hasActiveRide = activeRide?.status === Status.Accepted;
+
   const handleCancelRide = async () => {
     try {
-      await cancelRide(context.activeRide!.id);
+      await cancelRide(activeRide!.id);
       message.success("Ride canceled");
-      setDriverAccepted(false);
-      await context.setActiveRide();
+      await setActiveRide();
     } catch (error) {
       message.error("Failed to cancel ride");
     }
@@ -53,7 +53,7 @@ const OnGoingRide: FC = () => {
 
   return (
     <Space direction="vertical" size="large" style={{ textAlign: "center" }}>
-      {driverAccepted ? (
+      {hasActiveRide ? (
         <>
           <Avatar size={64} icon={<UserOutlined />} />
           <Text strong>Color: {driver?.color}</Text>
@@ -66,11 +66,13 @@ const OnGoingRide: FC = () => {
           <Text type="secondary">Waiting for driver to accept the ride...</Text>
         </>
       )}
+
       <Popconfirm
         title="Are you sure to cancel this ride?"
         onConfirm={handleCancelRide}
-        okText="Wait for driver"
-        cancelText="No"
+        okText="Yes"
+        okButtonProps={{ danger: true }}
+        cancelText="Wait for driver"
       >
         <Button type="primary" danger size="large" block>
           Cancel Ride

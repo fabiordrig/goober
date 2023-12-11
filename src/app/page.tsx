@@ -59,7 +59,8 @@ const Home = () => {
     fetchUser(activeId!);
   }, []);
 
-  const hasActiveRide = activeRide && activeRide.status === Status.Pending;
+  const hasActiveRide =
+    activeRide && (activeRide.status !== Status.Canceled || activeRide.status !== Status.Completed);
 
   if (loading || !user) {
     return (

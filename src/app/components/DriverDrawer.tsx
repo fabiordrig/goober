@@ -31,7 +31,14 @@ const DriverDrawer: FC<{
           <Typography.Text>{driverRide?.dropoffLocation}</Typography.Text>
         </Space>
         <Space size="large" style={{ width: "100%" }}>
-          <Button type="primary" block size="large" onClick={onAccept}>
+          <Button
+            type="primary"
+            block
+            size="large"
+            onClick={() => {
+              onAccept();
+            }}
+          >
             Accept
           </Button>
           <Button type="primary" danger block size="large" onClick={onClose}>

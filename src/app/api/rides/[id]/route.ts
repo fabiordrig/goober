@@ -12,7 +12,6 @@ export const GET = async (req: Request, { params }: any) => {
       .from('rides')
       .select('*')
       .eq('rider_id', params.id)
-      .eq('status', status ?? 'pending')
       .single()
 
 
