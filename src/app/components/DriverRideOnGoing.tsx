@@ -45,6 +45,7 @@ const DriverOnGoingRide: FC<{ driverRide: DriverRide; refetch: () => Promise<voi
   };
 
   const isRideAccepted = !!driverRide.acceptedAt && !driverRide.startedAt;
+  const isRideStarted = !!driverRide.startedAt;
 
   return (
     <Space direction="vertical" size="large">
@@ -78,17 +79,19 @@ const DriverOnGoingRide: FC<{ driverRide: DriverRide; refetch: () => Promise<voi
           </Button>
         </Popconfirm>
       )}
-      <Popconfirm
-        title="Are you sure to cancel this ride?"
-        onConfirm={handleCancelRide}
-        okText="Yes"
-        okButtonProps={{ danger: true }}
-        cancelText="No"
-      >
-        <Button type="primary" danger size="large" block>
-          Cancel Ride
-        </Button>
-      </Popconfirm>
+      {!driverRide.startedAt && (
+        <Popconfirm
+          title="Are you sure to cancel this ride?"
+          onConfirm={handleCancelRide}
+          okText="Yes"
+          okButtonProps={{ danger: true }}
+          cancelText="No"
+        >
+          <Button type="primary" danger size="large" block>
+            Cancel Ride
+          </Button>
+        </Popconfirm>
+      )}
     </Space>
   );
 };

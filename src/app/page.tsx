@@ -3,17 +3,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { createUser, getActiveRide } from "./services";
 import { generateUUID } from "./utils";
-import { Card, Skeleton, Typography, message } from "antd";
+import { Button, Card, Col, Row, Skeleton, Typography, message } from "antd";
 import StandardContent from "./components/StantardContent";
 import AskRide from "./components/AskRide";
 import OnGoingRide from "./components/OnGoingRide";
 import { Context } from "./context";
 import { Status } from "./constants";
+import ScheduleRideModal from "./components/ScheduleModal";
 
 const { Title } = Typography;
 
 const Home = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const { setActiveRide, setUser, user, getUser, activeRide } = useContext(Context);
 
   const handleGetNextRide = async (userId: string) => {
@@ -92,42 +94,46 @@ const Home = () => {
   if (loading || !user) {
     return (
       <StandardContent>
-        <div
-          style={{
-            padding: "0 50px",
-            alignContent: "center",
-          }}
-        >
-          <Card style={{ padding: "0 50px", marginTop: 64 }}>
-            <div style={{ background: "#fff", padding: 24, minHeight: 380, textAlign: "center" }}>
-              <Title level={2} style={{ marginBottom: 100 }} ellipsis>
-                Welcome, Rider!
-              </Title>
-              <Skeleton active />
-            </div>
-          </Card>
-        </div>
+        <Row justify="center">
+          <Col xs={20} sm={18} md={16} lg={12} xl={10}>
+            <Card style={{ marginTop: 64 }}>
+              <div style={{ background: "#fff", padding: 24, minHeight: 380, textAlign: "center" }}>
+                <Title level={2} style={{ marginBottom: 100 }} ellipsis>
+                  Welcome, Rider!
+                </Title>
+                <Skeleton active />
+              </div>
+            </Card>
+          </Col>
+        </Row>
       </StandardContent>
     );
   }
 
   return (
     <StandardContent>
-      <div
-        style={{
-          padding: "0 50px",
-          alignContent: "center",
-        }}
-      >
-        <Card style={{ padding: "0 50px", marginTop: 64 }}>
-          <div style={{ background: "#fff", padding: 24, minHeight: 380, textAlign: "center" }}>
-            <Title level={2} style={{ marginBottom: 100 }} ellipsis>
-              Welcome, Rider!
-            </Title>
-            {hasActiveRide ? <OnGoingRide /> : <AskRide />}
-          </div>
-        </Card>
-      </div>
+      <Row justify="center">
+        <Col xs={24} sm={18} md={16} lg={12} xl={10}>
+          <Card
+            style={{ marginTop: 64 }}
+            extra={
+              !hasActiveRide && (
+                <Button type="primary" onClick={() => setOpen(true)}>
+                  Schedule a ride
+                </Button>
+              )
+            }
+          >
+            <div style={{ background: "#fff", padding: 24, minHeight: 380, textAlign: "center" }}>
+              <Title level={2} style={{ marginBottom: 100 }}>
+                Welcome, Rider!
+              </Title>
+              {hasActiveRide ? <OnGoingRide /> : <AskRide />}
+              <ScheduleRideModal open={open} onClose={() => setOpen(false)} />
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </StandardContent>
   );
 };

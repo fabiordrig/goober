@@ -31,7 +31,6 @@ export const PATCH = async (req: Request) => {
 
 
   if (error || count === 0) {
-    console.log(error)
     throw new Error(JSON.stringify({ message: "The ride is already taken" }));
   }
 
@@ -80,7 +79,7 @@ export const POST = async (request: Request) => {
 
     const { data } = await supabase
       .from('rides')
-      .insert(
+      .insert([
         {
           rider_id: riderId, status: 'pending',
           price,
@@ -88,7 +87,7 @@ export const POST = async (request: Request) => {
           pickup_location_lng: pickup.lng,
           dropoff_location_lat: dropoff.lat,
           dropoff_location_lng: dropoff.lng,
-        }
+        }]
       ).select('*').single()
 
 

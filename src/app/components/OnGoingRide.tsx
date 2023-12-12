@@ -41,6 +41,8 @@ const OnGoingRide: FC = () => {
 
   const hasActiveRide = activeRide?.status === Status.Accepted;
 
+  const isRideNotStarted = !activeRide?.startedAt;
+
   const handleCancelRide = async () => {
     try {
       await cancelRide(activeRide!.id);
@@ -66,18 +68,19 @@ const OnGoingRide: FC = () => {
           <Text type="secondary">Waiting for driver to accept the ride...</Text>
         </>
       )}
-
-      <Popconfirm
-        title="Are you sure to cancel this ride?"
-        onConfirm={handleCancelRide}
-        okText="Yes"
-        okButtonProps={{ danger: true }}
-        cancelText="Wait for driver"
-      >
-        <Button type="primary" danger size="large" block>
-          Cancel Ride
-        </Button>
-      </Popconfirm>
+      {isRideNotStarted && (
+        <Popconfirm
+          title="Are you sure to cancel this ride?"
+          onConfirm={handleCancelRide}
+          okText="Yes"
+          okButtonProps={{ danger: true }}
+          cancelText="Wait for driver"
+        >
+          <Button type="primary" danger size="large" block>
+            Cancel Ride
+          </Button>
+        </Popconfirm>
+      )}
     </Space>
   );
 };

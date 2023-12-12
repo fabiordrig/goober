@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useContext, useEffect, useState } from "react";
-import { Avatar, Card, Form, Skeleton, Space, Spin, Typography, message } from "antd";
+import { Avatar, Card, Col, Form, Row, Skeleton, Space, Spin, Typography, message } from "antd";
 import StandardContent from "../components/StantardContent";
 import DriverDrawer from "../components/DriverDrawer";
 import { UserOutlined } from "@ant-design/icons";
@@ -34,7 +34,7 @@ const Page: FC = () => {
     try {
       await form.validateFields();
       const newUserId = generateUUID();
-      localStorage.setItem("userId", newUserId);
+      localStorage.setItem("driverId", newUserId);
 
       const payload: NewDriver = {
         ...formValues,
@@ -70,7 +70,8 @@ const Page: FC = () => {
   };
 
   const handleGetNextRide = async () => {
-    if (userLocation && driver) {
+    console.log("handleGetNextRide, driver", driver, userLocation);
+    if (userLocation && driver?.id) {
       if (driveRide?.status === Status.Cancelled) {
         message.warning("Ride canceled by the rider");
         return;
@@ -82,7 +83,7 @@ const Page: FC = () => {
   const handleGetDriver = async () => {
     setLoading(true);
     try {
-      const userId = localStorage.getItem("userId");
+      const userId = localStorage.getItem("driverId");
 
       if (!userId) {
         return;
@@ -107,7 +108,7 @@ const Page: FC = () => {
     }, 10000);
 
     return () => clearInterval(intervalId);
-  }, [userLocation]);
+  }, [userLocation, driver]);
 
   useEffect(() => {
     if (driveRide && driveRide.status === "pending") {
@@ -123,6 +124,7 @@ const Page: FC = () => {
       await acceptRide(driver.id, driveRide.riderId);
       setOpen(false);
       message.success("Ride accepted");
+      handleGetNextRide();
     } catch (error) {
       message.error("Failed to accept ride");
     }
@@ -152,43 +154,40 @@ const Page: FC = () => {
 
   return (
     <StandardContent>
-      <div
-        style={{
-          padding: "0 50px",
-          alignContent: "center",
-        }}
-      >
-        <Card style={{ padding: "0 50px", marginTop: 64 }}>
-          <div style={{ background: "#fff", padding: 24, minHeight: 380, textAlign: "center" }}>
-            <Title level={2} style={{ marginBottom: 50 }} ellipsis>
-              Welcome, Driver!
-            </Title>
-            {driver ? (
-              <Space direction="vertical" size="large">
-                <Avatar size={64} icon={<UserOutlined />} />
-                {driveRide?.id ? (
-                  <DriverOnGoingRide driverRide={driveRide} refetch={handleGetNextRide} />
-                ) : (
-                  <>
-                    <Space size="large">
-                      <Spin />
-                      <Text type="secondary">Waiting for the next ride </Text>
-                    </Space>
-                  </>
-                )}
-              </Space>
-            ) : (
-              <NewDriverForm form={form} onFinish={createNewDriver} />
-            )}
-            <DriverDrawer
-              open={open}
-              onClose={() => setOpen(false)}
-              driverRide={driveRide}
-              onAccept={handleAcceptRide}
-            />
-          </div>
-        </Card>
-      </div>
+      <Row justify="center">
+        <Col xs={20} sm={18} md={16} lg={12} xl={10}>
+          <Card style={{ marginTop: 64 }}>
+            <div style={{ background: "#fff", textAlign: "center" }}>
+              <Title level={2} style={{ marginBottom: 50 }}>
+                Welcome, Driver!
+              </Title>
+              {driver ? (
+                <Space direction="vertical" size="large">
+                  <Avatar size={64} icon={<UserOutlined />} />
+                  {driveRide?.acceptedAt ? (
+                    <DriverOnGoingRide driverRide={driveRide} refetch={handleGetNextRide} />
+                  ) : (
+                    <>
+                      <Space size="large">
+                        <Spin />
+                        <Text type="secondary">Waiting for the next ride </Text>
+                      </Space>
+                    </>
+                  )}
+                </Space>
+              ) : (
+                <NewDriverForm form={form} onFinish={createNewDriver} />
+              )}
+              <DriverDrawer
+                open={open}
+                onClose={() => setOpen(false)}
+                driverRide={driveRide}
+                onAccept={handleAcceptRide}
+              />
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </StandardContent>
   );
 };

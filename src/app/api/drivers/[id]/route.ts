@@ -5,10 +5,11 @@ export const GET = async (req: Request, { params }: any) => {
   try {
     const { id } = params;
 
+
     const { data } = await supabase
       .from('drivers')
       .select('*')
-      .eq('id', id)
+      .eq('user_id', id)
       .single()
 
     const response = {

@@ -35,6 +35,8 @@ export const GET = async (req: Request, { params }: any) => {
       dropoffLocationLng: data?.dropoff_location_lng,
       createdAt: data?.created_at,
       updatedAt: data?.updated_at,
+      startedAt: data?.started_at,
+      acceptedAt: data?.accepted_at,
     } as unknown as Ride
 
     return new Response(JSON.stringify(response), { status: 200 })

@@ -42,14 +42,14 @@ export const POST = async (req: Request) => {
       }
 
 
-      // const pickupLocations = await getCityByLatAndLng(currentRide.pickup_location_lat, currentRide.pickup_location_lng);
-      // const dropoffLocations = await getCityByLatAndLng(currentRide.dropoff_location_lat, currentRide.dropoff_location_lng);
+      const pickupLocations = await getCityByLatAndLng(currentRide.pickup_location_lat, currentRide.pickup_location_lng);
+      const dropoffLocations = await getCityByLatAndLng(currentRide.dropoff_location_lat, currentRide.dropoff_location_lng);
 
 
       return new Response(JSON.stringify({
         ...ride,
-        pickupLocation: "Pickup",
-        dropoffLocation: "Dropoff",
+        pickupLocation: pickupLocations.items[0].title,
+        dropoffLocation: dropoffLocations.items[0].title,
       }), { status: 200 });
     }
 
@@ -94,6 +94,6 @@ export const POST = async (req: Request) => {
     }), { status: 200 });
   } catch (error) {
 
-    return new Response(JSON.stringify(error), { status: 500 });
+    throw new Error(JSON.stringify(error));
   }
 };

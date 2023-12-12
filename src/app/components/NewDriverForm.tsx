@@ -16,7 +16,7 @@ const NewDriverForm: FC<{
   onFinish: (values: NewDriverFormValues) => void;
 }> = ({ form, onFinish }) => {
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} style={{ width: 500 }}>
+    <Form layout="vertical" form={form} onFinish={onFinish}>
       <Form.Item name="licenseNumber" label="License Number" rules={[{ required: true }]}>
         <Input size="large" />
       </Form.Item>

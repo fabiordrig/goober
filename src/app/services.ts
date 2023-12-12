@@ -229,3 +229,18 @@ export const startRide = async (driverId: string, riderId: string): Promise<Ride
 
   return result;
 }
+
+
+export const createSchedule = async (riderId: string, time: string, dayOfWeek: string, pickup: GeofinderLocation, dropoff: GeofinderLocation): Promise<void> => {
+  const response = await fetch(`/api/schedule`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ riderId, time, dayOfWeek, pickup, dropoff }),
+  });
+
+  const result = await response.json();
+
+  return result;
+}
