@@ -126,6 +126,8 @@ CREATE TABLE scheduled_rides (
 ## Tips
 
 - We are storing the userId and driverId on the localStorage, if you want to start from beginning, please clear the localStorage.
+- To run the API to check the scheduled rides, please request for the route GET /api/cron
+- The HERE api key is limited, so if you get an error, please change the key on the .env file.
 
 ## Video
 
