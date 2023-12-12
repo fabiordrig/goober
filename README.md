@@ -20,8 +20,8 @@ Goober is a ride-sharing application that offers scheduled and immediate taxi ri
 
 ## Challenges faced
 
-- **Ride Scheduling**: Implementing the ride scheduling feature presented a complex challenge. It required careful consideration of various factors, such as user preferences, date and time handling, and integrating this functionality seamlessly into the existing app structure. Successfully overcoming these hurdles was particularly rewarding, as it significantly enhanced the user experience by providing them with the flexibility to plan their rides in advance.
-- **Location-Based Ride Selection for Drivers**: Developing an efficient algorithm for location-based ride assignment was intricate. It involved geospatial calculations and real-time data processing to ensure the nearest driver is matched with the ride request. This feature not only improved the operational efficiency of the app but also maximized convenience for both drivers and riders.
+- **Ride Scheduling**: The challenge of implementing ride scheduling involved balancing user preferences and intricate date/time handling within the app's existing framework. Overcoming these challenges was rewarding as it greatly enhanced user experience by allowing advanced ride planning.
+- **Location-Based Ride Selection for Drivers**: Crafting an algorithm for location-based ride assignment required complex geospatial calculations and real-time data handling. This development significantly boosted the app's operational efficiency and convenience for drivers and riders alike..
 - **Learning Next.js**: This is the first time in my life working with this tool, so i'm proud with this result.
 
 ## Future Enhancements
@@ -29,6 +29,20 @@ Goober is a ride-sharing application that offers scheduled and immediate taxi ri
 - Implement a payment system.
 - Add a feature for rating drivers and riders.
 - Develop real-time ride tracking.
+
+## Thoughts and Reflections
+
+- I'm proud of the result, but the code is not clean enough, I need to refactor it. this is my first time using Next, to I discovered a lot of stuff during the development, but I follow the philosophy of "Make it work, make it right, make it fast". So for the first version, it works fine.
+But if we have to scale this app, we need to refactor the code
+
+## Time Spent
+
+- According my wakatime, I spent 23 hours on this project.
+- But we could break in:
+- 8 hours to learn Next.js
+- 3 hours to design the database
+- 3 hours to design the UI
+- 9 hours to code the app
 
 ## Installation and Setup
 
@@ -48,6 +62,7 @@ NEXT_PUBLIC_GEOFINDER_REVERSE_API_URL=https://revgeocode.search.hereapi.com/v1/r
 ```
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 
 
 CREATE TABLE Users (
@@ -81,8 +96,10 @@ CREATE TABLE Rides (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     rider_id UUID REFERENCES Users(id),
     driver_id UUID REFERENCES Drivers(id),
+    pickup_location TEXT,
     pickup_location_lat float,
     pickup_location_lng float,
+    dropoff_location TEXT,
     dropoff_location_lat float,
     dropoff_location_lng float,
     status VARCHAR(255),

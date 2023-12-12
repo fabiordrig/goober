@@ -24,8 +24,10 @@ export interface Ride {
   id: string;
   riderId: string;
   driverId: string;
+  pickupLocation: string;
   pickupLocationLat: number;
   pickupLocationLng: number;
+  dropoffLocation: string;
   dropoffLocationLat: number;
   dropoffLocationLng: number;
   pickupTime?: string;

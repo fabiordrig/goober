@@ -13,7 +13,7 @@ interface ContextProps {
   getActiveRide: (rideId: string) => Promise<Ride>;
   driver?: Driver;
   setDriver: (driver: Driver) => void;
-  createDriver: (driver: NewDriver) => void;
+  createDriver: (driver: NewDriver) => Promise<Driver>;
 }
 
 export const Context = createContext<ContextProps>({
@@ -22,7 +22,7 @@ export const Context = createContext<ContextProps>({
   getUser: () => Promise.reject(),
   getActiveRide: () => Promise.reject(),
   setDriver: () => {},
-  createDriver: () => {},
+  createDriver: () => Promise.reject(),
 });
 
 export const useRideContext = () => useContext(Context);
@@ -56,6 +56,7 @@ export const ContextProvider: React.FC<RideContextProviderProps> = ({ children }
   const handleCreateDriver = async (driver: NewDriver) => {
     const newDriver = await createDriver(driver);
     setDriver(newDriver);
+    return newDriver;
   };
 
   return (

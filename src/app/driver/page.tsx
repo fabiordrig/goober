@@ -34,7 +34,6 @@ const Page: FC = () => {
     try {
       await form.validateFields();
       const newUserId = generateUUID();
-      localStorage.setItem("driverId", newUserId);
 
       const payload: NewDriver = {
         ...formValues,
@@ -43,7 +42,8 @@ const Page: FC = () => {
         year: Number(formValues.year.format("YYYY")),
       };
 
-      await createDriver(payload);
+      const response = await createDriver(payload);
+      localStorage.setItem("driverId", response.id);
     } catch (error) {
       message.error("Failed to create new driver");
     } finally {
@@ -151,6 +151,8 @@ const Page: FC = () => {
     );
   }
 
+  const isRideOnGoing = !!driveRide?.acceptedAt && driveRide?.driverId === driver?.id;
+
   return (
     <StandardContent>
       <Row justify="center">
@@ -163,7 +165,7 @@ const Page: FC = () => {
               {driver ? (
                 <Space direction="vertical" size="large">
                   <Avatar size={64} icon={<UserOutlined />} />
-                  {driveRide?.acceptedAt ? (
+                  {isRideOnGoing ? (
                     <DriverOnGoingRide driverRide={driveRide} refetch={handleGetNextRide} />
                   ) : (
                     <>

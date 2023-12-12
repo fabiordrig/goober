@@ -18,7 +18,7 @@ export const GET = async (req: Request, { params }: any) => {
 
 
     if (!data) {
-      throw new Error(JSON.stringify({ message: "No ride found" }))
+      return new Response(JSON.stringify({ message: "No ride found" }), { status: 404 })
     }
 
 

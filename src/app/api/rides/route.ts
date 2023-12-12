@@ -40,8 +40,10 @@ export const PATCH = async (req: Request) => {
     status: data.status,
     driverId: data.driver_id,
     price: data.price,
+    pickupLocation: data.pickup_location,
     pickupLocationLat: data.pickup_location_lat,
     pickupLocationLng: data.pickup_location_lng,
+    dropoffLocation: data.dropoff_location,
     dropoffLocationLat: data.dropoff_location_lat,
     dropoffLocationLng: data.dropoff_location_lng,
     createdAt: data.created_at,
@@ -77,27 +79,44 @@ export const POST = async (request: Request) => {
 
 
 
+
+
     const { data } = await supabase
       .from('rides')
       .insert([
         {
           rider_id: riderId, status: 'pending',
           price,
+          pickup_location: pickup.address,
           pickup_location_lat: pickup.lat,
           pickup_location_lng: pickup.lng,
+          dropoff_location: dropoff.address,
           dropoff_location_lat: dropoff.lat,
           dropoff_location_lng: dropoff.lng,
         }]
       ).select('*').single()
 
 
-    return new Response(JSON.stringify({
+    const ride: Ride = {
       id: data?.id,
       riderId: data?.rider_id,
       status: data?.status,
+      driverId: data?.driver_id,
+      price: data?.price,
+      pickupLocation: data?.pickup_location,
+      pickupLocationLat: data?.pickup_location_lat,
+      pickupLocationLng: data?.pickup_location_lng,
+      dropoffLocation: data?.dropoff_location,
+      dropoffLocationLat: data?.dropoff_location_lat,
+      dropoffLocationLng: data?.dropoff_location_lng,
       createdAt: data?.created_at,
       updatedAt: data?.updated_at,
-    }), { status: 201 })
+      acceptedAt: data?.accepted_at,
+    }
+
+
+
+    return new Response(JSON.stringify(ride), { status: 201 })
   } catch (error) {
     return new Response(JSON.stringify(error), { status: 500 })
   }

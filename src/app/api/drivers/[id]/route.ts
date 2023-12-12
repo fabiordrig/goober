@@ -9,7 +9,7 @@ export const GET = async (req: Request, { params }: any) => {
     const { data } = await supabase
       .from('drivers')
       .select('*')
-      .eq('user_id', id)
+      .eq('id', id)
       .single()
 
     const response = {

@@ -24,11 +24,17 @@ const DriverDrawer: FC<{
 
         <Space direction="vertical" style={{ width: "100%" }}>
           <Typography.Title level={4}>Pickup</Typography.Title>
-          <Typography.Text>{driverRide?.pickupLocation}</Typography.Text>
+          <Typography.Text strong>{driverRide?.pickupLocation}</Typography.Text>
         </Space>
         <Space direction="vertical">
           <Typography.Title level={4}>Dropoff</Typography.Title>
-          <Typography.Text>{driverRide?.dropoffLocation}</Typography.Text>
+          <Typography.Text strong>{driverRide?.dropoffLocation}</Typography.Text>
+        </Space>
+        <Space direction="vertical">
+          <Typography.Title level={4}>Price</Typography.Title>
+          <Typography.Text strong>
+            {driverRide?.price ? driverRide?.price.toFixed(2) : 0}
+          </Typography.Text>
         </Space>
         <Space size="large" style={{ width: "100%" }}>
           <Button

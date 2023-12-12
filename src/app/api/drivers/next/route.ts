@@ -1,7 +1,7 @@
 import { calculateDistance } from "@/app/api/utils";
 import { GeofinderLocation, Ride } from "@/app/types";
 import supabase from "@/supabaseClient";
-import { getCityByLatAndLng } from "../../geofinder";
+
 
 const findClosestRide = (rides: any[], driverLocation: GeofinderLocation) => {
   if (!rides.length) return null;
@@ -31,8 +31,10 @@ export const POST = async (req: Request) => {
         status: currentRide.status,
         driverId: currentRide.driver_id,
         price: currentRide.price,
+        pickupLocation: currentRide.pickup_location,
         pickupLocationLat: currentRide.pickup_location_lat,
         pickupLocationLng: currentRide.pickup_location_lng,
+        dropoffLocation: currentRide.dropoff_location,
         dropoffLocationLat: currentRide.dropoff_location_lat,
         dropoffLocationLng: currentRide.dropoff_location_lng,
         createdAt: currentRide.created_at,
@@ -42,15 +44,9 @@ export const POST = async (req: Request) => {
       }
 
 
-      const pickupLocations = await getCityByLatAndLng(currentRide.pickup_location_lat, currentRide.pickup_location_lng);
-      const dropoffLocations = await getCityByLatAndLng(currentRide.dropoff_location_lat, currentRide.dropoff_location_lng);
 
 
-      return new Response(JSON.stringify({
-        ...ride,
-        pickupLocation: pickupLocations.items[0].title,
-        dropoffLocation: dropoffLocations.items[0].title,
-      }), { status: 200 });
+      return new Response(JSON.stringify(ride), { status: 200 });
     }
 
 
@@ -72,8 +68,10 @@ export const POST = async (req: Request) => {
       status: closestRide.status,
       driverId: closestRide.driver_id,
       price: closestRide.price,
+      pickupLocation: closestRide.pickup_location,
       pickupLocationLat: closestRide.pickup_location_lat,
       pickupLocationLng: closestRide.pickup_location_lng,
+      dropoffLocation: closestRide.dropoff_location,
       dropoffLocationLat: closestRide.dropoff_location_lat,
       dropoffLocationLng: closestRide.dropoff_location_lng,
       createdAt: closestRide.created_at,
@@ -82,16 +80,10 @@ export const POST = async (req: Request) => {
       acceptedAt: closestRide.accepted_at,
     }
 
-    const pickupLocations = await getCityByLatAndLng(closestRide.pickup_location_lat, closestRide.pickup_location_lng);
-    const dropoffLocations = await getCityByLatAndLng(closestRide.dropoff_location_lat, closestRide.dropoff_location_lng);
 
 
 
-    return new Response(JSON.stringify({
-      ...ride,
-      pickupLocation: pickupLocations.items[0].title,
-      dropoffLocation: dropoffLocations.items[0].title,
-    }), { status: 200 });
+    return new Response(JSON.stringify(ride), { status: 200 });
   } catch (error) {
 
     throw new Error(JSON.stringify(error));
