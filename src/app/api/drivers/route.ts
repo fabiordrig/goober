@@ -4,7 +4,6 @@ import supabase from "@/supabaseClient"
 export const POST = async (request: Request) => {
   const { id, userType,
     licenseNumber,
-    status,
     make,
     model,
     year,

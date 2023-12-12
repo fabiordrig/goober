@@ -30,6 +30,8 @@ export interface Ride {
   dropoffLocationLng: number;
   pickupTime?: string;
   dropoffTime?: string;
+  startedAt?: string;
+  acceptedAt?: string;
   status: 'pending' | 'accepted' | 'completed' | 'cancelled';
   price: number;
   createdAt: string;

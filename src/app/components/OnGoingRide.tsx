@@ -45,7 +45,7 @@ const OnGoingRide: FC = () => {
     try {
       await cancelRide(activeRide!.id);
       message.success("Ride canceled");
-      await setActiveRide();
+      setActiveRide();
     } catch (error) {
       message.error("Failed to cancel ride");
     }

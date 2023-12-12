@@ -169,6 +169,21 @@ export const cancelRide = async (id: string): Promise<Ride> => {
   return result;
 }
 
+export const cancelDriverRide = async (id: string, riderId: string): Promise<Ride> => {
+  const response = await fetch(`/api/drivers/${id}/cancel`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ riderId }),
+  });
+
+
+  const result = await response.json();
+
+  return result;
+}
+
 
 export const acceptRide = async (driverId: string, riderId: string): Promise<DriverRide> => {
   const response = await fetch(`/api/rides`, {
@@ -182,6 +197,35 @@ export const acceptRide = async (driverId: string, riderId: string): Promise<Dri
   const result = await response.json();
 
 
+
+  return result;
+}
+
+
+export const completeRide = async (driverId: string, riderId: string): Promise<Ride> => {
+  const response = await fetch(`/api/rides/${riderId}/finish`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ driverId }),
+  });
+
+  const result = await response.json();
+
+  return result;
+}
+
+export const startRide = async (driverId: string, riderId: string): Promise<Ride> => {
+  const response = await fetch(`/api/rides/${riderId}/start`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ driverId }),
+  });
+
+  const result = await response.json();
 
   return result;
 }

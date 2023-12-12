@@ -23,14 +23,15 @@ export const PATCH = async (req: Request) => {
 
   const { data, error, count } = await supabase
     .from('rides')
-    .update({ status: 'accepted', driver_id: driverId })
+    .update({ status: 'accepted', driver_id: driverId, accepted_at: new Date() })
     .match({ rider_id: riderId, status: 'pending' })
     .select("*").single();
 
 
 
 
-  if (error || count === 0 || !count) {
+  if (error || count === 0) {
+    console.log(error)
     throw new Error(JSON.stringify({ message: "The ride is already taken" }));
   }
 
@@ -46,6 +47,7 @@ export const PATCH = async (req: Request) => {
     dropoffLocationLng: data.dropoff_location_lng,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
+    acceptedAt: data.accepted_at,
   }
 
   const pickupLocations = await getCityByLatAndLng(data.pickup_location_lat, data.pickup_location_lng);

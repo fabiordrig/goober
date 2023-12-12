@@ -24,6 +24,35 @@ export const POST = async (req: Request) => {
       .eq('status', 'accepted')
       .single();
 
+    if (currentRide) {
+      const ride: Ride = {
+        id: currentRide.id,
+        riderId: currentRide.rider_id,
+        status: currentRide.status,
+        driverId: currentRide.driver_id,
+        price: currentRide.price,
+        pickupLocationLat: currentRide.pickup_location_lat,
+        pickupLocationLng: currentRide.pickup_location_lng,
+        dropoffLocationLat: currentRide.dropoff_location_lat,
+        dropoffLocationLng: currentRide.dropoff_location_lng,
+        createdAt: currentRide.created_at,
+        updatedAt: currentRide.updated_at,
+        startedAt: currentRide.started_at,
+        acceptedAt: currentRide.accepted_at,
+      }
+
+
+      // const pickupLocations = await getCityByLatAndLng(currentRide.pickup_location_lat, currentRide.pickup_location_lng);
+      // const dropoffLocations = await getCityByLatAndLng(currentRide.dropoff_location_lat, currentRide.dropoff_location_lng);
+
+
+      return new Response(JSON.stringify({
+        ...ride,
+        pickupLocation: "Pickup",
+        dropoffLocation: "Dropoff",
+      }), { status: 200 });
+    }
+
 
     const { data: rides } = await supabase
       .from('rides')
@@ -49,6 +78,8 @@ export const POST = async (req: Request) => {
       dropoffLocationLng: closestRide.dropoff_location_lng,
       createdAt: closestRide.created_at,
       updatedAt: closestRide.updated_at,
+      startedAt: closestRide.started_at,
+      acceptedAt: closestRide.accepted_at,
     }
 
     const pickupLocations = await getCityByLatAndLng(closestRide.pickup_location_lat, closestRide.pickup_location_lng);

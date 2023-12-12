@@ -1,7 +1,7 @@
 "use client";
 
-import { FC, use, useContext, useEffect, useState } from "react";
-import { Avatar, Button, Card, Form, Skeleton, Space, Spin, Typography, message } from "antd";
+import { FC, useContext, useEffect, useState } from "react";
+import { Avatar, Card, Form, Skeleton, Space, Spin, Typography, message } from "antd";
 import StandardContent from "../components/StantardContent";
 import DriverDrawer from "../components/DriverDrawer";
 import { UserOutlined } from "@ant-design/icons";
@@ -10,10 +10,13 @@ import { DriverRide, NewDriver } from "../types";
 import { generateUUID } from "../utils";
 import { Context } from "../context";
 import NewDriverForm, { NewDriverFormValues } from "../components/NewDriverForm";
+import DriverOnGoingRide from "../components/DriverRideOnGoing";
+import { Status } from "../constants";
 
 const { Text, Title } = Typography;
 
 const Page: FC = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const [driveRide, setDriverRide] = useState<DriverRide>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -68,6 +71,10 @@ const Page: FC = () => {
 
   const handleGetNextRide = async () => {
     if (userLocation && driver) {
+      if (driveRide?.status === Status.Cancelled) {
+        message.warning("Ride canceled by the rider");
+        return;
+      }
       setDriverRide(await getNextRide(userLocation, driver.id));
     }
   };
@@ -102,13 +109,19 @@ const Page: FC = () => {
     return () => clearInterval(intervalId);
   }, [userLocation]);
 
+  useEffect(() => {
+    if (driveRide && driveRide.status === "pending") {
+      setOpen(true);
+    }
+  }, [driveRide]);
+
   const handleAcceptRide = async () => {
     if (!driveRide || !driver) {
       return;
     }
     try {
       await acceptRide(driver.id, driveRide.riderId);
-      setDriverRide(undefined);
+      setOpen(false);
       message.success("Ride accepted");
     } catch (error) {
       message.error("Failed to accept ride");
@@ -153,29 +166,26 @@ const Page: FC = () => {
             {driver ? (
               <Space direction="vertical" size="large">
                 <Avatar size={64} icon={<UserOutlined />} />
-                <Space>
-                  <Text strong>Total rides: </Text>1
-                </Space>
-                <Space>
-                  <Text strong>Total earned: </Text>$1
-                </Space>
-
-                <Space size="large">
-                  <Spin />
-                  <Text type="secondary">Waiting for the next ride </Text>
-                </Space>
+                {driveRide?.id ? (
+                  <DriverOnGoingRide driverRide={driveRide} refetch={handleGetNextRide} />
+                ) : (
+                  <>
+                    <Space size="large">
+                      <Spin />
+                      <Text type="secondary">Waiting for the next ride </Text>
+                    </Space>
+                  </>
+                )}
               </Space>
             ) : (
               <NewDriverForm form={form} onFinish={createNewDriver} />
             )}
-            {driveRide?.id && (
-              <DriverDrawer
-                open={!!driveRide}
-                onClose={() => setDriverRide(undefined)}
-                driverRide={driveRide}
-                onAccept={handleAcceptRide}
-              />
-            )}
+            <DriverDrawer
+              open={open}
+              onClose={() => setOpen(false)}
+              driverRide={driveRide}
+              onAccept={handleAcceptRide}
+            />
           </div>
         </Card>
       </div>

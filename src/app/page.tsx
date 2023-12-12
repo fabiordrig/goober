@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useState } from "react";
-import { createUser, getActiveRide, getUser } from "./services";
+import { createUser, getActiveRide } from "./services";
 import { generateUUID } from "./utils";
 import { Card, Skeleton, Typography, message } from "antd";
 import StandardContent from "./components/StantardContent";
@@ -16,13 +16,29 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { setActiveRide, setUser, user, getUser, activeRide } = useContext(Context);
 
+  const handleGetNextRide = async (userId: string) => {
+    try {
+      const response = await getActiveRide(user?.id ?? userId);
+
+      if (response.status === Status.Cancelled) {
+        setActiveRide();
+
+        message.warning("Ride canceled by the driver");
+        return;
+      }
+
+      setActiveRide(response);
+    } catch (error) {
+      message.error("Failed to fetch active ride");
+    }
+  };
+
   const fetchUser = async (userId: string) => {
     setLoading(true);
     try {
       setUser(await getUser());
 
-      const response = await getActiveRide(userId);
-      setActiveRide(response);
+      handleGetNextRide(userId);
     } catch (error) {
       message.error("Failed to fetch user");
     } finally {
@@ -59,8 +75,19 @@ const Home = () => {
     fetchUser(activeId!);
   }, []);
 
+  useEffect(() => {
+    const activeId = localStorage.getItem("userId");
+    const intervalId = setInterval(() => {
+      handleGetNextRide(activeId ?? user!.id);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   const hasActiveRide =
-    activeRide && (activeRide.status !== Status.Canceled || activeRide.status !== Status.Completed);
+    activeRide?.id &&
+    activeRide.status !== Status.Cancelled &&
+    activeRide.status !== Status.Completed;
 
   if (loading || !user) {
     return (

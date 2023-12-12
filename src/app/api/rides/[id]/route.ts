@@ -5,14 +5,21 @@ import supabase from "@/supabaseClient"
 export const GET = async (req: Request, { params }: any) => {
   try {
 
-    const query = new URL(req.url).searchParams
-    const status = query.get("status")
+
 
     const { data } = await supabase
       .from('rides')
       .select('*')
       .eq('rider_id', params.id)
+      .or(`status.eq.pending,status.eq.accepted`)
+      .order('created_at', { ascending: false })
       .single()
+
+
+
+    if (!data) {
+      throw new Error(JSON.stringify({ message: "No ride found" }))
+    }
 
 
 
