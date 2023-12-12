@@ -70,7 +70,6 @@ const Page: FC = () => {
   };
 
   const handleGetNextRide = async () => {
-    console.log("handleGetNextRide, driver", driver, userLocation);
     if (userLocation && driver?.id) {
       if (driveRide?.status === Status.Cancelled) {
         message.warning("Ride canceled by the rider");
